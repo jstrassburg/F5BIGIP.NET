@@ -1,0 +1,6 @@
+﻿{
+  "Name": "/Common/myNodeName",
+  "Address": "10.10.1.2",
+  "ConnectionLimit": 0,
+  "Description": "My cool server node"
+}

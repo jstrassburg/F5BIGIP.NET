@@ -1,0 +1,14 @@
+﻿{
+  "Name": "/Common/pool_example",
+  "Description": "An example pool.",
+  "LoadBalancingMethod": "RoundRobin",
+  "Members": [
+    {
+      "Address": "10.10.1.2",
+      "Port": 0
+    }
+  ],
+  "Monitors": [
+    "/Common/gateway_icmp"
+  ]
+}

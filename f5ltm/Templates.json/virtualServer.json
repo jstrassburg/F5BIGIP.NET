@@ -1,0 +1,18 @@
+﻿{
+  "Name": "/Common/vs_my_virtual_server",
+  "Description": "Serving your load balancing needs.",
+  "Address": "10.10.1.3",
+  "Port": 80,
+  "VirtualServerProtocol": "TransmissionControlProtocol",
+  "DefaultPoolName": "/Common/pool_example",
+  "Profiles": [
+    {
+      "VirtualServerProfileContext": "All",
+      "Name": "/Common/http"
+    },
+    {
+      "VirtualServerProfileContext": "All",
+      "Name": "/Common/tcp"
+    }
+  ]
+}
