@@ -214,7 +214,6 @@ namespace F5
 			if (virtualServerName == null)
 				return null;
 
-			var description = F5Interfaces.LocalLBVirtualServer.get_description(new[] { name }).First();
 			var destination = F5Interfaces.LocalLBVirtualServer.get_destination(new[] { name }).First();
 			var protocol = F5Interfaces.LocalLBVirtualServer.get_protocol(new[] { name }).First();
 			var defaultPoolName = F5Interfaces.LocalLBVirtualServer.get_default_pool_name(new[] { name }).First();
@@ -223,7 +222,6 @@ namespace F5
 			var virtualServer = new VirtualServer
 			{
 				Name = virtualServerName,
-				Description = description,
 				Address = destination.address,
 				Port = destination.port,
 				VirtualServerProtocol = (VirtualServerProtocol)protocol,
@@ -268,9 +266,6 @@ namespace F5
 						profile_name = x.Name
 					}).ToArray()}
 				);
-			F5Interfaces.LocalLBVirtualServer.set_description(
-				new[] { virtualServer.Name },
-				new[] { virtualServer.Description });
 		}
 
 		public static void DeleteVirtualServer(string deleteVirtualServerName)

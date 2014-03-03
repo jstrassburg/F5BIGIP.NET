@@ -142,7 +142,7 @@ namespace f5ltm
 			var virtualServers = Context.FindAllVirtualServers();
 			foreach (var virtualServer in virtualServers)
 			{
-				Console.WriteLine("Name: {0}, Description: {1}", virtualServer.Name, virtualServer.Description);
+				Console.WriteLine("Name: {0}", virtualServer.Name);
 			}
 		}
 
