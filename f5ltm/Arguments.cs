@@ -40,7 +40,7 @@ namespace f5ltm
 		[CommandLineParameter(Command = "applynode", Description = "Apply a node from a file containing a json definition /applynode:myNode.json", Required = false)]
 		public string ApplyNodeFile { get; set; }
 
-		[CommandLineParameter(Command = "deletenode", Description = "Delete a node by its address /deletenode:172.25.12.34", Required = false)]
+		[CommandLineParameter(Command = "deletenode", Description = "Delete a node by its name /deletenode:/Common/MyNode", Required = false)]
 		public string DeleteNodeName { get; set; }
 
 		[CommandLineParameter(Command = "listpools", Description = "List the pools", Required = false)]
