@@ -184,7 +184,7 @@ namespace f5ltm
 			var pools = Context.FindAllPools();
 			foreach (var pool in pools)
 			{
-				Console.WriteLine("Name: {0}, Description: {1}, Load balancing method: {2}", pool.Name, pool.Description, pool.LoadBalancingMethod);
+				Console.WriteLine("Name: {0}, Load balancing method: {1}", pool.Name, pool.LoadBalancingMethod);
 				foreach (var member in pool.Members)
 				{
 					Console.WriteLine("\tMember - Address: {0}, Port: {1}", member.Address, member.Port);

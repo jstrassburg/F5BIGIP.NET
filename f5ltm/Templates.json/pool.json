@@ -1,6 +1,5 @@
 ﻿{
   "Name": "/Common/pool_example",
-  "Description": "An example pool.",
   "LoadBalancingMethod": "RoundRobin",
   "Members": [
     {

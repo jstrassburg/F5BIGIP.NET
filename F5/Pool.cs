@@ -8,7 +8,6 @@ namespace F5
 	{
 		public string Name { get; set; }
 
-		public string Description { get; set; }
 
 		[JsonConverter(typeof(StringEnumConverter))]
 		public LoadBalancingMethod LoadBalancingMethod { get; set; }

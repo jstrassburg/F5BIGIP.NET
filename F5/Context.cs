@@ -109,7 +109,6 @@ namespace F5
 			var poolName = F5Interfaces.LocalLBPool.get_list().FirstOrDefault(x => x == name);
 			if (poolName == null)
 				return null;
-			var description = F5Interfaces.LocalLBPool.get_description(new[] { poolName }).FirstOrDefault();
 			var loadBalancingMethod = F5Interfaces.LocalLBPool.get_lb_method(new[] { poolName }).FirstOrDefault();
 			var members = F5Interfaces.LocalLBPool.get_member(new[] { poolName }).FirstOrDefault();
 			var monitorAssociations = F5Interfaces.LocalLBPool.get_monitor_association(new[] { poolName }).FirstOrDefault();
@@ -117,7 +116,6 @@ namespace F5
 			var pool = new Pool
 			{
 				Name = poolName,
-				Description = description,
 				LoadBalancingMethod = (LoadBalancingMethod)loadBalancingMethod,
 				Members = members == null
 					? new List<PoolMember>()
@@ -154,9 +152,6 @@ namespace F5
 			F5Interfaces.LocalLBPool.set_lb_method(
 				new[] { pool.Name },
 				new[] { (LocalLBLBMethod)pool.LoadBalancingMethod });
-			F5Interfaces.LocalLBPool.set_description(
-				new[] { pool.Name },
-				new[] { pool.Description });
 			F5Interfaces.LocalLBPool.add_member(
 				new[] { pool.Name },
 				new[] { pool.Members.Select(x => new CommonIPPortDefinition { address = x.Address, port = x.Port }).ToArray() });
@@ -179,9 +174,6 @@ namespace F5
 				new[] { pool.Name },
 				new[] { (LocalLBLBMethod)pool.LoadBalancingMethod },
 				new[] { pool.Members.Select(x => new CommonIPPortDefinition { address = x.Address, port = x.Port }).ToArray() });
-			F5Interfaces.LocalLBPool.set_description(
-				new[] { pool.Name },
-				new[] { pool.Description });
 			F5Interfaces.LocalLBPool.set_monitor_association(
 				new[] {new LocalLBPoolMonitorAssociation
 				{
