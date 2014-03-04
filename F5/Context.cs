@@ -233,6 +233,7 @@ namespace F5
 			var protocol = F5Interfaces.LocalLBVirtualServer.get_protocol(new[] { name }).First();
 			var defaultPoolName = F5Interfaces.LocalLBVirtualServer.get_default_pool_name(new[] { name }).First();
 			var profile = F5Interfaces.LocalLBVirtualServer.get_profile(new[] { name }).First();
+			var vlans = F5Interfaces.LocalLBVirtualServer.get_vlan(new[] { name }).First();
 
 			var virtualServer = new VirtualServer
 			{
@@ -249,6 +250,7 @@ namespace F5
 										 Name = x.profile_name,
 										 VirtualServerProfileContext = (VirtualServerProfileContext)x.profile_context
 									 }),
+				Vlans = vlans.vlans,
 			};
 			return virtualServer;
 		}
@@ -281,6 +283,14 @@ namespace F5
 						profile_name = x.Name
 					}).ToArray()}
 				);
+
+			F5Interfaces.LocalLBVirtualServer.set_vlan(
+				new[] { virtualServer.Name },
+				new[] { new CommonVLANFilterList
+				{
+					state = CommonEnabledState.STATE_ENABLED,
+					vlans = virtualServer.Vlans.ToArray()
+				}});
 		}
 
 		public static void DeleteVirtualServer(string deleteVirtualServerName)

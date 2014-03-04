@@ -13,5 +13,8 @@
       "VirtualServerProfileContext": "All",
       "Name": "/Common/tcp"
     }
+  ],
+  "Vlans": [
+    "/Common/MyVlan"
   ]
 }

@@ -27,5 +27,7 @@ namespace F5
 		public string DefaultPoolName { get; set; }
 
 		public IEnumerable<VirtualServerProfile> Profiles { get; set; }
+
+		public IEnumerable<string> Vlans { get; set; }
 	}
 }
