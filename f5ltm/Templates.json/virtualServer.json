@@ -16,5 +16,6 @@
   ],
   "Vlans": [
     "/Common/MyVlan"
-  ]
+  ],
+  "SnatType": "None"
 }

@@ -234,6 +234,7 @@ namespace F5
 			var defaultPoolName = F5Interfaces.LocalLBVirtualServer.get_default_pool_name(new[] { name }).First();
 			var profile = F5Interfaces.LocalLBVirtualServer.get_profile(new[] { name }).First();
 			var vlans = F5Interfaces.LocalLBVirtualServer.get_vlan(new[] { name }).First();
+			var snatType = F5Interfaces.LocalLBVirtualServer.get_snat_type(new[] { name }).First();
 
 			var virtualServer = new VirtualServer
 			{
@@ -251,12 +252,18 @@ namespace F5
 										 VirtualServerProfileContext = (VirtualServerProfileContext)x.profile_context
 									 }),
 				Vlans = vlans.vlans,
+				SnatType = (SnatType)snatType,
 			};
 			return virtualServer;
 		}
 
 		public static void ApplyVirtualServer(VirtualServer virtualServer)
 		{
+			if (virtualServer.SnatType != SnatType.None && virtualServer.SnatType != SnatType.Automap)
+			{
+				throw new F5Exception(string.Format("Unsupported SnatType: {0}", virtualServer.SnatType));
+			}
+
 			if (FindVirtualServer(virtualServer.Name) != null)
 				DeleteVirtualServer(virtualServer.Name);
 
@@ -291,6 +298,11 @@ namespace F5
 					state = CommonEnabledState.STATE_ENABLED,
 					vlans = virtualServer.Vlans.ToArray()
 				}});
+
+			if (virtualServer.SnatType == SnatType.Automap)
+			{
+				F5Interfaces.LocalLBVirtualServer.set_snat_automap(new[] { virtualServer.Name });
+			}
 		}
 
 		public static void DeleteVirtualServer(string deleteVirtualServerName)

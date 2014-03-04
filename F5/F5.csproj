@@ -66,6 +66,7 @@
     <Compile Include="Pool.cs" />
     <Compile Include="PoolMember.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SnatType.cs" />
     <Compile Include="VirtualServerProfile.cs" />
     <Compile Include="VirtualServerProfileContext.cs" />
     <Compile Include="VirtualServerProtocol.cs" />

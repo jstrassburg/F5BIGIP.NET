@@ -29,5 +29,8 @@ namespace F5
 		public IEnumerable<VirtualServerProfile> Profiles { get; set; }
 
 		public IEnumerable<string> Vlans { get; set; }
+
+		[JsonConverter(typeof(StringEnumConverter))]
+		public SnatType SnatType { get; set; }
 	}
 }
