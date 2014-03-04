@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using iControl;
 
 namespace F5
@@ -7,12 +9,15 @@ namespace F5
 	public static class Context
 	{
 		internal static readonly Interfaces F5Interfaces = new Interfaces();
+		private static Version _version;
+		private const short MajorVersionThatSwitchedToV2Classes = 11;
 
 		public static void Initialize(string bigIp, string userName, string password)
 		{
 			var initialized = F5Interfaces.initialize(bigIp, userName, password);
 			if (!initialized)
 				throw new F5Exception(F5Interfaces.LastException);
+			_version = ParseVersion(F5Interfaces.GlobalLBApplication.get_version());
 		}
 
 		public static void Initialize(string bigIp, long port, string userName, string password)
@@ -20,30 +25,44 @@ namespace F5
 			var initialized = F5Interfaces.initialize(bigIp, port, userName, password);
 			if (!initialized)
 				throw new F5Exception(F5Interfaces.LastException);
+			_version = ParseVersion(F5Interfaces.GlobalLBApplication.get_version());
 		}
 
-		public static Node FindNode(string name)
+		/// <summary>
+		/// Parse the <see cref="Version"/> out of the string that comes back from iControl's
+		/// GlobalLBApplication.get_version() which looks like: "BIG-IP _v11.2.0"
+		/// </summary>
+		/// <param name="bigIpVersion">The result of GlobalLBApplication.get_version()</param>
+		/// <returns>A parsed <see cref="Version"/> instance.</returns>
+		private static Version ParseVersion(string bigIpVersion)
 		{
-			var nodeName = F5Interfaces.LocalLBNodeAddressV2.get_list().FirstOrDefault(x => x == name);
-			if (nodeName == null)
+			var match = Regex.Match(bigIpVersion, @"\d*\.\d*\.\d*");
+			return new Version(match.ToString());
+		}
+
+		public static Node FindNode(string address)
+		{
+			var nodeAddress = F5Interfaces.LocalLBNodeAddress.get_list().FirstOrDefault(x => x == address);
+			if (string.IsNullOrEmpty(nodeAddress))
 				return null;
-			var address = F5Interfaces.LocalLBNodeAddressV2.get_address(new[] { nodeName }).FirstOrDefault();
-			var connectionLimit = F5Interfaces.LocalLBNodeAddressV2.get_connection_limit(new[] { nodeName }).FirstOrDefault();
-			var description = F5Interfaces.LocalLBNodeAddressV2.get_description(new[] { nodeName }).FirstOrDefault();
-			return new Node { Name = nodeName, Address = address, ConnectionLimit = connectionLimit, Description = description };
+
+			var name = F5Interfaces.LocalLBNodeAddress.get_screen_name(new[] { nodeAddress }).FirstOrDefault() ?? string.Empty;
+			var connectionLimit = F5Interfaces.LocalLBNodeAddress.get_connection_limit(new[] { nodeAddress }).FirstOrDefault();
+
+			return new Node { Name = name, Address = nodeAddress, ConnectionLimit = connectionLimit == null ? 0 : connectionLimit.low };
 		}
 
 		public static IEnumerable<Node> FindAllNodes()
 		{
-			var nodeNames = F5Interfaces.LocalLBNodeAddressV2.get_list();
-			var nodes = nodeNames.Select(FindNode);
+			var nodeAddresses = F5Interfaces.LocalLBNodeAddress.get_list();
+			var nodes = nodeAddresses.Select(FindNode);
 
 			return nodes;
 		}
 
 		public static void ApplyNode(Node node)
 		{
-			var existingNode = FindNode(node.Name);
+			var existingNode = FindNode(node.Address);
 			if (existingNode == null)
 			{
 				InsertNewNode(node);
@@ -56,30 +75,34 @@ namespace F5
 
 		private static void UpdateNode(Node node)
 		{
-			// address and name appear to be immutable
-			F5Interfaces.LocalLBNodeAddressV2.set_connection_limit(
-				new[] { node.Name },
-				new[] { node.ConnectionLimit ?? 0 });
-			F5Interfaces.LocalLBNodeAddressV2.set_description(
-				new[] { node.Name },
-				new[] { node.Description });
+			F5Interfaces.LocalLBNodeAddress.set_connection_limit(
+				new[] { node.Address },
+				new[] { new CommonULong64 { low = node.ConnectionLimit } });
 		}
 
 		private static void InsertNewNode(Node node)
 		{
-			F5Interfaces.LocalLBNodeAddressV2.create(
-				new[] { node.Name },
-				new[] { node.Address },
-				new[] { node.ConnectionLimit ?? 0 });
-			if (!string.IsNullOrWhiteSpace(node.Description))
-				F5Interfaces.LocalLBNodeAddressV2.set_description(
+			if (_version.Major >= MajorVersionThatSwitchedToV2Classes)
+			{
+				F5Interfaces.LocalLBNodeAddressV2.create(
 					new[] { node.Name },
-					new[] { node.Description });
+					new[] { node.Address },
+					new[] { node.ConnectionLimit });
+			}
+			else
+			{
+				F5Interfaces.LocalLBNodeAddress.create(
+				new[] { node.Address },
+				new[] { node.ConnectionLimit });
+				F5Interfaces.LocalLBNodeAddress.set_screen_name(
+					new[] { node.Address },
+					new[] { node.Name });
+			}
 		}
 
-		public static void DeleteNode(string nodeName)
+		public static void DeleteNode(string address)
 		{
-			F5Interfaces.LocalLBNodeAddressV2.delete_node_address(new[] { nodeName });
+			F5Interfaces.LocalLBNodeAddress.delete_node_address(new[] { address });
 		}
 
 		public static IEnumerable<Rule> FindAllRules()

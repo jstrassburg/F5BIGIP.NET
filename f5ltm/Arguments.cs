@@ -34,14 +34,14 @@ namespace f5ltm
 		[CommandLineParameter(Command = "listnodes", Description = "List the nodes", Required = false)]
 		public bool ListNodes { get; set; }
 
-		[CommandLineParameter(Command = "dumpnode", Description = "Dump a node as json to stdout /dumpnode:{name}", Required = false)]
-		public string DumpNodeName { get; set; }
+		[CommandLineParameter(Command = "dumpnode", Description = "Dump a node as json to stdout by its address /dumpnode:10.10.2.5", Required = false)]
+		public string DumpNodeAddress { get; set; }
 
 		[CommandLineParameter(Command = "applynode", Description = "Apply a node from a file containing a json definition /applynode:myNode.json", Required = false)]
 		public string ApplyNodeFile { get; set; }
 
-		[CommandLineParameter(Command = "deletenode", Description = "Delete a node by its name /deletenode:/Common/MyNode", Required = false)]
-		public string DeleteNodeName { get; set; }
+		[CommandLineParameter(Command = "deletenode", Description = "Delete a node by its address /deletenode:10.10.2.5", Required = false)]
+		public string DeleteNodeAddress { get; set; }
 
 		[CommandLineParameter(Command = "listpools", Description = "List the pools", Required = false)]
 		public bool ListPools { get; set; }

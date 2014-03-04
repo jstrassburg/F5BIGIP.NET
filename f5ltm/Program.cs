@@ -19,17 +19,17 @@ namespace f5ltm
 				{
 					ListNodes(arguments.BigIp);
 				}
-				if (!string.IsNullOrEmpty(arguments.DumpNodeName))
+				if (!string.IsNullOrEmpty(arguments.DumpNodeAddress))
 				{
-					DumpNode(arguments.DumpNodeName, arguments.BigIp);
+					DumpNode(arguments.DumpNodeAddress, arguments.BigIp);
 				}
 				if (!string.IsNullOrEmpty(arguments.ApplyNodeFile))
 				{
 					ApplyNode(arguments.ApplyNodeFile, arguments.BigIp);
 				}
-				if (!string.IsNullOrEmpty(arguments.DeleteNodeName))
+				if (!string.IsNullOrEmpty(arguments.DeleteNodeAddress))
 				{
-					DeleteNode(arguments.DeleteNodeName, arguments.BigIp);
+					DeleteNode(arguments.DeleteNodeAddress, arguments.BigIp);
 				}
 
 				if (arguments.ListPools)
@@ -192,6 +192,16 @@ namespace f5ltm
 			}
 		}
 
+		private static void ApplyPool(string applyPoolFile, string bigIp)
+		{
+			var jsonPool = File.ReadAllText(applyPoolFile);
+
+			Console.WriteLine("Applying the following pool to {0}\n{1}", bigIp, jsonPool);
+
+			var pool = JsonConvert.DeserializeObject<Pool>(jsonPool);
+			Context.ApplyPool(pool);
+		}
+
 		private static void DumpPool(string dumpPoolName, string bigIp)
 		{
 			var pool = Context.FindPool(dumpPoolName);
@@ -203,10 +213,26 @@ namespace f5ltm
 			}
 		}
 
-		private static void DeleteNode(string nodeName, string bigIp)
+		private static void ListNodes(string bigIp)
 		{
-			Console.WriteLine("Deleting node with name: {0} from {1}", nodeName, bigIp);
-			Context.DeleteNode(nodeName);
+			Console.WriteLine("Listing nodes on: {0}", bigIp);
+			var nodes = Context.FindAllNodes();
+			foreach (var node in nodes)
+			{
+				Console.WriteLine("Address: {0}, Name: {1}, Connection limit: {2}",
+					node.Address, node.Name, node.ConnectionLimit);
+			}
+		}
+
+		private static void DumpNode(string dumpNodeAddress, string bigIp)
+		{
+			var node = Context.FindNode(dumpNodeAddress);
+			if (node == null)
+				Console.WriteLine("Node address: {0}, not found on {1}.", dumpNodeAddress, bigIp);
+			else
+			{
+				Console.WriteLine(JsonConvert.SerializeObject(node, Formatting.Indented));
+			}
 		}
 
 		private static void ApplyNode(string applyNodeFile, string bigIp)
@@ -219,35 +245,16 @@ namespace f5ltm
 			Context.ApplyNode(node);
 		}
 
-		private static void ApplyPool(string applyPoolFile, string bigIp)
+		private static void DeleteNode(string nodeAddress, string bigIp)
 		{
-			var jsonPool = File.ReadAllText(applyPoolFile);
-
-			Console.WriteLine("Applying the following pool to {0}\n{1}", bigIp, jsonPool);
-
-			var pool = JsonConvert.DeserializeObject<Pool>(jsonPool);
-			Context.ApplyPool(pool);
-		}
-
-		private static void DumpNode(string dumpNodeName, string bigIp)
-		{
-			var node = Context.FindNode(dumpNodeName);
-			if (node == null)
-				Console.WriteLine("Node: {0}, not found on {1}.", dumpNodeName, bigIp);
+			if (Context.FindNode(nodeAddress) != null)
+			{
+				Console.WriteLine("Deleting node with address: {0} from {1}", nodeAddress, bigIp);
+				Context.DeleteNode(nodeAddress);
+			}
 			else
 			{
-				Console.WriteLine(JsonConvert.SerializeObject(node, Formatting.Indented));
-			}
-		}
-
-		private static void ListNodes(string bigIp)
-		{
-			Console.WriteLine("Listing nodes on: {0}", bigIp);
-			var nodes = Context.FindAllNodes();
-			foreach (var node in nodes)
-			{
-				Console.WriteLine("Name: {0}, Address: {1}, Connection limit: {2}, Description: {3}",
-					node.Name, node.Address, node.ConnectionLimit, node.Description);
+				Console.WriteLine("Node with address {0} not found on {1}", nodeAddress, bigIp);
 			}
 		}
 	}
