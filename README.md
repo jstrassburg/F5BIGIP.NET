@@ -62,51 +62,51 @@ JSON Formats
 
 node.json
 ---------
-  {
-    "Name": "/Common/myNodeName",
-    "Address": "10.10.1.2",
-    "ConnectionLimit": 0
-  }
+    {
+      "Name": "/Common/myNodeName",
+      "Address": "10.10.1.2",
+      "ConnectionLimit": 0
+    }
 
 pool.json
 ---------
-  {
-    "Name": "/Common/pool_example",
-    "LoadBalancingMethod": "RoundRobin",
-    "Members": [
-      {
-        "Address": "10.10.1.2",
-        "Port": 0
-      }
-    ],
-    "Monitors": [
-      "/Common/gateway_icmp"
-    ]
-  }
+    {
+      "Name": "/Common/pool_example",
+      "LoadBalancingMethod": "RoundRobin",
+      "Members": [
+        {
+          "Address": "10.10.1.2",
+          "Port": 0
+        }
+      ],
+      "Monitors": [
+        "/Common/gateway_icmp"
+      ]
+    }
 
 virtualServer.json
 ------------------
-  {
-    "Name": "/Common/vs_my_virtual_server",
-    "Address": "10.10.1.3",
-    "Port": 80,
-    "VirtualServerProtocol": "TransmissionControlProtocol",
-    "DefaultPoolName": "/Common/pool_example",
-    "Profiles": [
-      {
-        "VirtualServerProfileContext": "All",
-        "Name": "/Common/http"
-      },
-      {
-        "VirtualServerProfileContext": "All",
-        "Name": "/Common/tcp"
-      }
-    ],
-    "Vlans": [
-      "/Common/MyVlan"
-    ],
-    "SnatType": "None"
-  }
+    {
+      "Name": "/Common/vs_my_virtual_server",
+      "Address": "10.10.1.3",
+      "Port": 80,
+      "VirtualServerProtocol": "TransmissionControlProtocol",
+      "DefaultPoolName": "/Common/pool_example",
+      "Profiles": [
+        {
+          "VirtualServerProfileContext": "All",
+          "Name": "/Common/http"
+        },
+        {
+          "VirtualServerProfileContext": "All",
+          "Name": "/Common/tcp"
+        }
+      ],
+      "Vlans": [
+        "/Common/MyVlan"
+      ],
+      "SnatType": "None"
+    }
 
 ****************************************************************
 
