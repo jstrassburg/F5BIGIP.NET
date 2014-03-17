@@ -4,6 +4,9 @@ using Newtonsoft.Json.Converters;
 
 namespace F5
 {
+	/// <summary>
+	/// Represents a monitor on the BIGIP
+	/// </summary>
 	public class Monitor
 	{
 		public string Name { get; set; }

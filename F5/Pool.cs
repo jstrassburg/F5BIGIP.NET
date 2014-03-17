@@ -4,6 +4,9 @@ using Newtonsoft.Json.Converters;
 
 namespace F5
 {
+	/// <summary>
+	/// Represents a pool on the BIGIP
+	/// </summary>
 	public class Pool
 	{
 		public string Name { get; set; }

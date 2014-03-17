@@ -8,7 +8,7 @@ namespace F5
 {
 	public static class Context
 	{
-		internal static readonly Interfaces F5Interfaces = new Interfaces();
+		private static readonly Interfaces F5Interfaces = new Interfaces();
 		private static Version _version;
 		private const short MajorVersionThatSwitchedToV2Classes = 11;
 
