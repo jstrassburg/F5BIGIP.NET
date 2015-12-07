@@ -3,7 +3,7 @@ F5BIGIP.NET
 
 Making F5's iControl API much easier to work with
 
-F5's [iControl API](https://devcentral.f5.com/icontrol]) is powerful but awkward to use. Usage results in code that looks like this:
+F5's [iControl API](https://devcentral.f5.com/icontrol) is powerful but awkward to use. Usage results in code that looks like this:
 
     var poolName = F5Interfaces.LocalLBPool.get_list().FirstOrDefault(x => x == name);
     var description = F5Interfaces.LocalLBPool.get_description(new[] { poolName }).FirstOrDefault();
